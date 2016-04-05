@@ -3,13 +3,15 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+$app->register(new \Ronanchilvers\Silex\Provider\YamlConfigServiceProvider(__DIR__ . '/../config.yml'));
+
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
   'db.options' => array(
     'driver'   => 'pdo_mysql',
-    'host'     => 'localhost',
-    'dbname'   => 'maps_dev',
-    'user'     => 'maps_dev',
-    'password' => 'galjp98whno3iEeU356y2yhilu',
+    'host'     => $app['config']['db']['host'] ?: 'localhost',
+    'dbname'   => $app['config']['db']['schema'],
+    'user'     => $app['config']['db']['username'],
+    'password' => $app['config']['db']['password'],
   ),
 ));
 
