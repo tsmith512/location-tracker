@@ -28,7 +28,7 @@
 
     // http://stackoverflow.com/questions/26629000/mapbox-issue-with-parsing-json-data-for-heatmap
     var heat = L.heatLayer([], { maxZoom: 12 }).addTo(map);
-    $.getJSON('/geojson.php?q=points', function(data) {
+    $.getJSON('/public/api/location/history/points', function(data) {
       var geojson = L.geoJson(data, {
         onEachFeature: function(feature, layer) {
           heat.addLatLng(L.latLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), { radius: 5, blur: 5});
