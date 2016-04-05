@@ -15,9 +15,20 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
   ),
 ));
 
+$keyCheck = function (Request $request) use ($app) {
+  if ($request->query->get('key') !== $app['config']['keys']['access']) {
+    return $app->abort(403, "Unauthorized");
+  }
+};
+
 $app->get('/', function(){
   return new Response("Hello world");
 });
+
+$app->post('/api/location', function (Request $request) use ($app){
+  return new Response('Howdy, this should be working.');
+})
+->before($keyCheck);
 
 $app->get('/api/location/latest', function () use ($app) {
   $sql = 'SELECT full_city, city, timestamp FROM location_history WHERE city IS NOT NULL ORDER BY timestamp DESC LIMIT 1';

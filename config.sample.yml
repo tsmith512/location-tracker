@@ -3,3 +3,5 @@ db:
   schema: database_name
   username: your_username
   password: your_password
+keys:
+  access: custom_api_key_for_inserting_checkins
