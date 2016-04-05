@@ -30,7 +30,7 @@ function geocodeLatest() {
   $mysqli = new mysqli("localhost", $conf['username'], $conf['password'], $conf['database']);
   if ($mysqli->connect_errno) { echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error; }
 
-  $latest = $mysqli->query("SELECT * FROM `location_history` WHERE `city` IS NULL ORDER BY `timestamp` DESC LIMIT 20");
+  $latest = $mysqli->query("SELECT * FROM `location_history` WHERE `city` IS NULL AND (`geocode_attempts` IS NULL OR `geocode_attempts` < 2) ORDER BY `timestamp` DESC LIMIT 20");
   $history = array();
 
   while ($data = $latest->fetch_assoc()) {
