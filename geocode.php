@@ -16,7 +16,7 @@ function getCity($latlng) {
   $output = json_decode($result, true);
   curl_close($ch);
 
-  $match = isset($output['results']) ? reset($output['results']) : false;
+  $match = isset($output['results']) ? reset($output['results']) : NULL;
 
   $city = isset($match['address_components'][0]['long_name']) ? $match['address_components'][0]['long_name'] : NULL;
   $full = isset($match['formatted_address']) ? $match['formatted_address'] : NULL;
@@ -38,7 +38,10 @@ function geocodeLatest() {
     $location = getCity(array($data['lat'], $data['lon']));
 
     if (!empty($location[0])) {
-      $query = "UPDATE `location_history` SET `city` = '{$location[0]}', `full_city` = '{$location[1]}' WHERE `id` = {$data['id']} LIMIT 1;";
+      $query = "UPDATE `location_history` SET `city` = '{$location[0]}', `full_city` = '{$location[1]}', `geocode_attempts` = IF(`geocode_attempts` IS NULL, 1, `geocode_attempts` + 1) WHERE `id` = {$data['id']} LIMIT 1;";
+      $update = $mysqli->query($query);
+    } else {
+      $query = "UPDATE `location_history` SET `geocode_attempts` = IF(`geocode_attempts` IS NULL, 1, `geocode_attempts` + 1) WHERE `id` = {$data['id']} LIMIT 1;";
       $update = $mysqli->query($query);
     }
   }
