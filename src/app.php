@@ -44,3 +44,24 @@ $app->get('/api/location/history/line', function () use ($app) {
 
   return $app->json($history);
 });
+
+$app->get('/api/location/history/points', function() use ($app) {
+  $sql = 'SELECT lon, lat FROM location_history ORDER BY timestamp DESC';
+  $result = $app['db']->fetchAll($sql);
+  $history = array();
+
+  foreach ($result as $point) {
+    $lon = $point['lon'];
+    $lat = $point['lat'];
+
+    $history[] = array(
+      'type' => 'Feature',
+      'geometry' => array(
+        'type' => 'Point',
+        'coordinates' => array($lon, $lat),
+      ),
+    );
+  }
+
+  return $app->json($history);
+});

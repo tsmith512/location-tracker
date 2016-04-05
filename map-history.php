@@ -23,7 +23,7 @@
     // var myLayer = L.mapbox.featureLayer().setGeoJSON(locationHistory).addTo(map);
 
     L.mapbox.featureLayer()
-      .loadURL('/geojson.php?q=points')
+      .loadURL('/public/api/location/history/points')
       .on('ready', function(e) {
         var clusterGroup = new L.MarkerClusterGroup();
         e.target.eachLayer(function(layer) {
