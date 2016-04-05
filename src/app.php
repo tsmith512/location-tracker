@@ -26,9 +26,31 @@ $app->get('/', function(){
 });
 
 $app->post('/api/location', function (Request $request) use ($app){
-  return new Response('Howdy, this should be working.');
-})
-->before($keyCheck);
+  // This is the %LOC parameter from Tasker
+  $location = explode(',', $request->request->get('location'));
+  $lat = is_numeric($location[0]) ? (float) $location[0] : false;
+  $lon = (isset($location[1]) && is_numeric($location[1])) ? (float) $location[1] : false;
+
+  if ($lat && $lon) {
+    $app['db']->insert('location_history', array(
+      'lat' => $lat,
+      'lon' => $lon,
+      'city' => 'TEST ENTRY',
+    ));
+
+    if ((int) $app['db']->lastInsertId()) {
+      // We got back a row ID, so we know the database has this info
+      return new Response("Location recorded.", 201);
+    } else {
+      // We aren't sure the DB recorded the new info, but we have no errors
+      return new Response("Location received.", 200);
+    }
+  } else {
+    // $lat and/or $lon either weren't submitted or weren't numeric.
+    // @TODO: More detail here wouldn't be a bad thing...
+    return $app->abort(400, "Bad Request");
+  }
+})->before($keyCheck);
 
 $app->get('/api/location/latest', function () use ($app) {
   $sql = 'SELECT full_city, city, timestamp FROM location_history WHERE city IS NOT NULL ORDER BY timestamp DESC LIMIT 1';
