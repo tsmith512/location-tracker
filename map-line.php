@@ -24,7 +24,7 @@
 
 
     var tripLine = L.mapbox.featureLayer()
-      .loadURL('/geojson.php?q=line')
+      .loadURL('/public/api/location/history/line')
       .addTo(map);
 
     tripLine.on('ready', function () {

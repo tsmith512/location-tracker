@@ -19,6 +19,28 @@ $app->get('/', function(){
 
 $app->get('/api/location/latest', function () use ($app) {
   $sql = 'SELECT full_city, city, timestamp FROM location_history WHERE city IS NOT NULL ORDER BY timestamp DESC LIMIT 1';
-  $test = $app['db']->fetchAll($sql);
-  return $app->json(reset($test));
+  $result = $app['db']->fetchAll($sql);
+  return $app->json(reset($result));
+});
+
+$app->get('/api/location/history/line', function () use ($app) {
+  $sql = 'SELECT lon, lat FROM location_history ORDER BY timestamp DESC';
+  $result = $app['db']->fetchAll($sql);
+
+  $history = array(
+    'type' => 'LineString',
+    'properties' => array(
+      'stroke' => '#FF6633',
+      'stroke-width' => 2
+     ),
+  );
+
+  foreach ($result as $point) {
+    $lon = $point['lon'];
+    $lat = $point['lat'];
+
+    $history['coordinates'][] = array($lon, $lat);
+  }
+
+  return $app->json($history);
 });

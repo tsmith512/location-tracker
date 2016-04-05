@@ -46,27 +46,6 @@ switch ($_GET['q']) {
     }
     break;
 
-  case 'line':
-    $latest = $mysqli->query("SELECT * FROM `location_history` ORDER BY `timestamp` DESC");
-    $history = array(
-      'type' => 'LineString',
-      'properties' => array(
-        'stroke' => '#006699',
-        'stroke-width' => 2
-      ),
-    );
-
-    while ($data = $latest->fetch_assoc()) {
-      // Round these to ~100 meters
-      // $lon = round($data['lon'], 3);
-      $lon = $data['lon'];
-      // $lat = round($data['lat'], 3);
-      $lat = $data['lat'];
-
-      $history['coordinates'][] = array($lon, $lat);
-    }
-    break;
-
   default:
     # code...
     break;
