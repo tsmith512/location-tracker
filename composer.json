@@ -1,6 +1,7 @@
 {
     "require": {
         "silex/silex": "~1.3",
-        "doctrine/dbal": "~2.2"
+        "doctrine/dbal": "~2.2",
+        "ronanchilvers/silex-yaml-config-provider": "0.1.*"
     }
 }
