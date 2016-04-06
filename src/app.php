@@ -136,6 +136,9 @@ $app->get('/api/geocode-test', function() use ($app) {
     if ($e instanceof Geocoder\Exception\NoResultException) {
       return $app->abort(404, "No geocoder results found");
     }
+    else if ($e instanceof Geocoder\Exception\QuotaExceededException) {
+      // @TODO: If we've over quota
+    }
     else {
       var_dump("something else happened");
     }
