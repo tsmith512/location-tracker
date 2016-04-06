@@ -5,3 +5,4 @@ db:
   password: your_password
 keys:
   access: custom_api_key_for_inserting_checkins
+  gmaps: google_maps_api_key_for_geocoder

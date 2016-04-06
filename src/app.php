@@ -122,14 +122,24 @@ $app->get('/api/location/history/points', function() use ($app) {
 $app->get('/api/geocode-test', function() use ($app) {
   $geocoder = $app['geocoder'];
 
-  $test = array('30.352399', '-97.751842'); // Austin
+  // $test = array('30.352399', '-97.751842'); // Austin
+  $test = array('33.264425', '-46.350838'); // Middle of the Atlantic Ocean
   // $test = array('48.8587545','2.2916273');  // Paris
 
   var_dump($test);
 
-  $result = $geocoder->reverse($test[0], $test[1]);
+  try {
+    $result = $geocoder->reverse($test[0], $test[1]);
+  }
 
-  var_dump($result);
+  catch (Exception $e) {
+    if ($e instanceof Geocoder\Exception\NoResultException) {
+      return $app->abort(404, "No geocoder results found");
+    }
+    else {
+      var_dump("something else happened");
+    }
+  }
 
   return true;
 });
