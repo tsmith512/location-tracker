@@ -41,7 +41,6 @@ $app->post('/api/location', function (Request $request) use ($app){
     $app['db']->insert('location_history', array(
       'lat' => $lat,
       'lon' => $lon,
-      'city' => 'TEST ENTRY',
     ));
 
     if ((int) $app['db']->lastInsertId()) {
