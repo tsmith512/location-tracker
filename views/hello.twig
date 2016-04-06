@@ -5,6 +5,32 @@
   <title>{{howdy}}</title>
 </head>
 <body>
-  <p>{{howdy}}</p>
+  <p>Last seen in <span id="placeholder"></span></p>
+
+  <script>
+    var request = new XMLHttpRequest();
+    request.open('GET', '/public/api/location/latest', true);
+
+    request.onload = function() {
+      var placeholder = document.getElementById('placeholder');
+
+      if (this.status >= 200 && this.status < 400) {
+        // Success!
+        var data = JSON.parse(this.response);
+        if (data.city.length > 0) {
+          placeholder.innerHTML = data.city + ".";
+        }
+      } else {
+        // We reached our target server, but it returned an error
+        placeholder.innerHTML = "parts unknown!";
+      }
+    };
+
+    request.onerror = function() {
+      // There was a connection error of some sort
+    };
+
+    request.send();
+  </script>
 </body>
 </html>
