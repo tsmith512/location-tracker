@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{howdy}}</title>
-</head>
-<body>
-  <p>Last seen in <span id="placeholder"></span></p>
+{% extends "base.twig" %}
 
+{% block title %}{{howdy}}{% endblock %}
+
+{% block content %}
+  <p>Last seen in <span id="placeholder"></span></p>
+{% endblock %}
+
+{% block scripts %}
   <script>
     var request = new XMLHttpRequest();
     request.open('GET', '/public/api/location/latest', true);
@@ -32,5 +32,4 @@
 
     request.send();
   </script>
-</body>
-</html>
+{% endblock %}
