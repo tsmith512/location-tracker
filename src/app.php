@@ -5,6 +5,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 $app->register(new \Ronanchilvers\Silex\Provider\YamlConfigServiceProvider(__DIR__ . '/../config.yml'));
 
+$app->register(new Silex\Provider\TwigServiceProvider(), array(
+    'twig.path' => __DIR__.'/../views',
+));
+
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
   'db.options' => array(
     'driver'   => 'pdo_mysql',
@@ -21,8 +25,10 @@ $keyCheck = function (Request $request) use ($app) {
   }
 };
 
-$app->get('/', function(){
-  return new Response("Hello world");
+$app->get('/', function () use ($app) {
+  return $app['twig']->render('hello.twig', array(
+    'howdy' => "Hello World! It's me, Twig.",
+  ));
 });
 
 $app->post('/api/location', function (Request $request) use ($app){
