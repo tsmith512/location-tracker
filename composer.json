@@ -4,6 +4,7 @@
         "doctrine/dbal": "~2.2",
         "ronanchilvers/silex-yaml-config-provider": "0.1.*",
         "twig/twig": "~1.24",
-        "symfony/twig-bridge": "~3.0"
+        "symfony/twig-bridge": "~3.0",
+        "geocoder-php/geocoder-service-provider": "0.1.*"
     }
 }

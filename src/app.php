@@ -2,8 +2,21 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Geocoder\Provider\GeocoderServiceProvider;
 
 $app->register(new \Ronanchilvers\Silex\Provider\YamlConfigServiceProvider(__DIR__ . '/../config.yml'));
+
+$app->register(new GeocoderServiceProvider());
+// Override the default provider to use Google Maps instead
+$app['geocoder.provider'] = $app->share(function () use ($app) {
+  return new \Geocoder\Provider\GoogleMapsProvider(
+    $app['geocoder.adapter'],       // The HTTP adapter; use the default
+    null, // Locale
+    null, // Region
+    true, // Use SSL (boolean)
+    $app['config']['keys']['gmaps'] // API Key
+  );
+});
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../views',
@@ -104,4 +117,19 @@ $app->get('/api/location/history/points', function() use ($app) {
   }
 
   return $app->json($history);
+});
+
+$app->get('/api/geocode-test', function() use ($app) {
+  $geocoder = $app['geocoder'];
+
+  $test = array('30.352399', '-97.751842'); // Austin
+  // $test = array('48.8587545','2.2916273');  // Paris
+
+  var_dump($test);
+
+  $result = $geocoder->reverse($test[0], $test[1]);
+
+  var_dump($result);
+
+  return true;
 });
