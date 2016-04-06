@@ -40,8 +40,6 @@ function getCity($latlng) {
 
     return NULL;
   }
-var_dump($output['status']);
-die();
 }
 
 function geocodeLatest() {
@@ -50,7 +48,7 @@ function geocodeLatest() {
   $mysqli = new mysqli("localhost", $conf['username'], $conf['password'], $conf['database']);
   if ($mysqli->connect_errno) { echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error; }
 
-  $latest = $mysqli->query("SELECT * FROM `location_history` WHERE `city` IS NULL AND (`geocode_attempts` IS NULL OR `geocode_attempts` < 2) ORDER BY RAND() DESC LIMIT 3");
+  $latest = $mysqli->query("SELECT * FROM `location_history` WHERE `city` IS NULL AND (`geocode_attempts` IS NULL OR `geocode_attempts` < 2) ORDER BY `timestamp` DESC LIMIT 3");
   $history = array();
 
   while ($data = $latest->fetch_assoc()) {
@@ -60,7 +58,6 @@ function geocodeLatest() {
     if ($location === FALSE) {
       // There was an error making the Geocoding request; probably rate limiting
       // Break out of this loop and don't make any further requests.
-      var_dump("FALSE \n");
       break;
     }
     else if ($location === NULL) {
@@ -68,12 +65,10 @@ function geocodeLatest() {
       // move on.
       $query = "UPDATE `location_history` SET `geocode_attempts` = IF(`geocode_attempts` IS NULL, 1, `geocode_attempts` + 1) WHERE `id` = {$data['id']} LIMIT 1;";
       $update = $mysqli->query($query);
-      var_dump("NULL \n");
     }
     else if (is_array($location) && !empty($location[0])) {
       $query = "UPDATE `location_history` SET `city` = '{$location[0]}', `full_city` = '{$location[1]}', `geocode_attempts` = IF(`geocode_attempts` IS NULL, 1, `geocode_attempts` + 1) WHERE `id` = {$data['id']} LIMIT 1;";
       $update = $mysqli->query($query);
-      var_dump("UPDATED \n");
     }
     else {
       // Don't know what this would leave. We weren't rate limited, and we didn't
