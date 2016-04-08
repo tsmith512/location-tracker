@@ -150,9 +150,9 @@ $app->get('/api/geocode-test', function() use ($app) {
 });
 
 $app->get('/api/class-test', function() use ($app) {
-  $test = array('33.264425', '-46.350838'); // Middle of the Atlantic Ocean
+  // $test = array('33.264425', '-46.350838'); // Middle of the Atlantic Ocean
   $location = new Location($app);
-  $location->setCoords($test[0], $test[1]);
-
+  // $location->setCoords($test[0], $test[1]);
+$location->load();
   return true;
 });
