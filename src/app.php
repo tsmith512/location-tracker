@@ -3,6 +3,7 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Geocoder\Provider\GeocoderServiceProvider;
+use Traveler\Location;
 
 $app->register(new \Ronanchilvers\Silex\Provider\YamlConfigServiceProvider(__DIR__ . '/../config.yml'));
 
@@ -126,12 +127,15 @@ $app->get('/api/geocode-test', function() use ($app) {
   $test = array('33.264425', '-46.350838'); // Middle of the Atlantic Ocean
   // $test = array('48.8587545','2.2916273');  // Paris
 
-  var_dump($test);
-
   try {
     $result = $geocoder->reverse($test[0], $test[1]);
-  }
 
+    $location = array(
+      'city' => $result->getCity(),
+      'full_city' => implode(', ', array($result->getCity(), $result->getRegionCode(), $result->getCountryCode())),
+    );
+  var_dump($location);
+  }
   catch (Exception $e) {
     if ($e instanceof Geocoder\Exception\NoResultException) {
       return $app->abort(404, "No geocoder results found");
@@ -143,6 +147,12 @@ $app->get('/api/geocode-test', function() use ($app) {
       var_dump("something else happened");
     }
   }
+});
+
+$app->get('/api/class-test', function() use ($app) {
+  $test = array('33.264425', '-46.350838'); // Middle of the Atlantic Ocean
+  $location = new Location($app);
+  $location->setCoords($test[0], $test[1]);
 
   return true;
 });
