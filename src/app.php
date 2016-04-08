@@ -120,39 +120,10 @@ $app->get('/api/location/history/points', function() use ($app) {
   return $app->json($history);
 });
 
-$app->get('/api/geocode-test', function() use ($app) {
-  $geocoder = $app['geocoder'];
-
-  // $test = array('30.352399', '-97.751842'); // Austin
-  $test = array('33.264425', '-46.350838'); // Middle of the Atlantic Ocean
-  // $test = array('48.8587545','2.2916273');  // Paris
-
-  try {
-    $result = $geocoder->reverse($test[0], $test[1]);
-
-    $location = array(
-      'city' => $result->getCity(),
-      'full_city' => implode(', ', array($result->getCity(), $result->getRegionCode(), $result->getCountryCode())),
-    );
-  var_dump($location);
-  }
-  catch (Exception $e) {
-    if ($e instanceof Geocoder\Exception\NoResultException) {
-      return $app->abort(404, "No geocoder results found");
-    }
-    else if ($e instanceof Geocoder\Exception\QuotaExceededException) {
-      // @TODO: If we've over quota
-    }
-    else {
-      var_dump("something else happened");
-    }
-  }
-});
-
 $app->get('/api/class-test', function() use ($app) {
-  // $test = array('33.264425', '-46.350838'); // Middle of the Atlantic Ocean
   $location = new Location($app);
   // $location->setCoords($test[0], $test[1]);
-$location->load();
+  $location->setId(37094);
+  // $location->load();
   return true;
 });
