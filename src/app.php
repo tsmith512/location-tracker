@@ -58,8 +58,15 @@ $app->post('/api/location', function (Request $request) use ($app){
     ));
 
     if ((int) $app['db']->lastInsertId()) {
-      // We got back a row ID, so we know the database has this info
+      // We got back a row ID, so we know the database has this info.
+
+      // Geocode:
+      // @TODO this is a shitty way to do this:
+      $location = new Location($app);
+      if ($location->loadId((int) $app['db']->lastInsertId())) { $location->geocode(); }
+
       return new Response("Location recorded.", 201);
+
     } else {
       // We aren't sure the DB recorded the new info, but we have no errors
       return new Response("Location received.", 200);
@@ -121,9 +128,14 @@ $app->get('/api/location/history/points', function() use ($app) {
 });
 
 $app->get('/api/class-test', function() use ($app) {
-  $location = new Location($app);
-  // $location->setCoords($test[0], $test[1]);
-  $location->setId(37094);
-  // $location->load();
-  return true;
+  $result = $app['db']->fetchAll('SELECT id FROM location_history WHERE geocode_attempts < 2 AND geocode_full_response IS NULL ORDER BY id ASC LIMIT 10');
+  if (!empty($result)) {
+    foreach ($result as $k => $v) {
+      $location = new Location($app);
+      if ($location->loadId((int) $result[$k]['id'])) { $location->geocode(); }
+    }
+    return true;
+  } else {
+    return false;
+  }
 });
