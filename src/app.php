@@ -40,10 +40,17 @@ $keyCheck = function (Request $request) use ($app) {
 };
 
 $app->get('/', function () use ($app) {
-  return $app['twig']->render('hello.twig', array(
-    'howdy' => "Hello World! It's me, Twig.",
-  ));
+  return $app['twig']->render('home.twig', array('option' => 'home'));
 });
+
+$app->get('/line', function () use ($app) {
+  return $app['twig']->render('line.twig', array('option' => 'line'));
+});
+
+$app->get('/heat', function () use ($app) {
+  return $app['twig']->render('heat.twig', array('option' => 'heat'));
+});
+
 
 $app->post('/api/location', function (Request $request) use ($app){
   // This is the %LOC parameter from Tasker
@@ -79,7 +86,7 @@ $app->post('/api/location', function (Request $request) use ($app){
 })->before($keyCheck);
 
 $app->get('/api/location/latest', function () use ($app) {
-  $sql = 'SELECT full_city, city, timestamp FROM location_history WHERE city IS NOT NULL ORDER BY timestamp DESC LIMIT 1';
+  $sql = 'SELECT full_city, city, timestamp, lat, lon FROM location_history WHERE city IS NOT NULL ORDER BY timestamp DESC LIMIT 1';
   $result = $app['db']->fetchAll($sql);
   return $app->json(reset($result));
 });

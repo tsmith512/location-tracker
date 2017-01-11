@@ -5,7 +5,8 @@
         "ronanchilvers/silex-yaml-config-provider": "0.1.*",
         "twig/twig": "~1.24",
         "symfony/twig-bridge": "~3.0",
-        "geocoder-php/geocoder-service-provider": "0.1.*"
+        "geocoder-php/geocoder-service-provider": "0.1.*",
+        "almasaeed2010/adminlte": "~2.0"
     },
     "autoload": {
         "psr-4": {

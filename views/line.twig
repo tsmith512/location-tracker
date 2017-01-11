@@ -1,0 +1,35 @@
+{% extends "base.twig" %}
+
+{% block title %}History{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="box">
+      <div id="map" style="height:200px;width:100%"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    // Provide your access token
+    L.mapbox.accessToken = 'pk.eyJ1IjoidHNtaXRoNTEyIiwiYSI6IlBERzc0Mk0ifQ.IBWVp4rs5wKQ_8pkLOBXUw';
+    // Create a map in the div #map
+    var map = L.mapbox.map('map', 'tsmith512.b3c22e74');
+
+    $('#map').height($('footer').offset().top - $('#map').offset().top - 90);
+
+    var tripLine = L.mapbox.featureLayer()
+      .loadURL('/public/api/location/history/line')
+      .addTo(map);
+
+    tripLine.on('ready', function () {
+      map.fitBounds(tripLine.getBounds());
+    });
+
+  </script>
+{% endblock %}

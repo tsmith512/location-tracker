@@ -1,0 +1,79 @@
+{% extends "base.twig" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-6 col-sm-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-aqua"><i class="fa fa-map-marker"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Last Location</span>
+        <span class="info-box-number" id="last-location"></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-sm-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-red"><i class="fa fa-clock-o"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Last Reported</span>
+        <span class="info-box-number" id="last-time"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="box">
+      <div id="map" style="height:200px;width:100%"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://momentjs.com/downloads/moment.js"></script>
+  <script src="https://momentjs.com/downloads/moment-timezone-with-data-2010-2020.js"></script>
+  <script>
+    var request = new XMLHttpRequest();
+    request.open('GET', '/public/api/location/latest', true);
+
+    request.onload = function() {
+      var locationUpdate = document.getElementById('last-location');
+      var timeUpdate = document.getElementById('last-time');
+
+      if (this.status >= 200 && this.status < 400) {
+        // Success!
+        var data = JSON.parse(this.response);
+        if (data.city.length > 0) {
+          locationUpdate.innerHTML = data.city;
+          var lastTime = moment.tz(data.timestamp, "UTC");
+          var lastTimeOutput = lastTime.clone().tz("America/Chicago");
+          timeUpdate.innerHTML = lastTimeOutput.format('h:mma z');
+          map.setView([data.lat, data.lon], 11);
+        }
+      } else {
+        // We reached our target server, but it returned an error
+        locationUpdate.innerHTML = "Parts Unknown";
+      }
+    };
+
+    request.onerror = function() {
+      // There was a connection error of some sort
+    };
+
+    $('#map').height($('footer').offset().top - $('#map').offset().top - 90);
+
+    // Provide your access token
+    L.mapbox.accessToken = 'pk.eyJ1IjoidHNtaXRoNTEyIiwiYSI6IlBERzc0Mk0ifQ.IBWVp4rs5wKQ_8pkLOBXUw';
+    // Create a map in the div #map
+    var map = L.mapbox.map('map', 'tsmith512.b3c22e74');
+
+    request.send();
+
+  </script>
+{% endblock %}

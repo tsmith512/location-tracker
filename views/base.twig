@@ -1,16 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>{% block title %}{% endblock %}</title>
+
+  <!-- In the words of Beverly Crusher, "I swore I'd never use one of these things." -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+  <link rel="stylesheet" href="/vendor/almasaeed2010/adminlte/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" />
+  <link rel="stylesheet" href="/vendor/almasaeed2010/adminlte/dist/css/AdminLTE.min.css" />
+  <link rel="stylesheet" href="/vendor/almasaeed2010/adminlte/dist/css/skins/skin-blue.min.css" />
+
+  <link href="https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.css" rel="stylesheet" />
 </head>
-<body>
-  <div id="content">
-    {% block content %}{% endblock %}
-  </div>
-  <div id="footer">
-      {% block footer %}{% endblock %}
-  </div>
+<body class="hold-transition skin-blue sidebar-mini">
+  <div class="wrapper">
+    <header class="main-header">
+      <!-- Logo -->
+      <a href="#" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><i class="fa fa-map"></i></span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg">Location Tracker</span>
+      </a>
+      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+    </header>
+    <aside class="main-sidebar">
+      <section class="sidebar">
+        <ul class="sidebar-menu">
+          <li {% if option is defined and option == 'home' %}class="active"{% endif %}><a href="/public"><i class="fa fa-home"></i> <span>Home</span></a></li>
+          <li {% if option is defined and option == 'line' %}class="active"{% endif %}><a href="/public/line"><i class="fa fa-map-marker"></i> <span>History</span></a></li>
+          <li {% if option is defined and option == 'heat' %}class="active"{% endif %}><a href="/public/heat"><i class="fa fa-globe"></i> <span>Heatmap</span></a></li>
+        </ul>
+        <!-- /.sidebar-menu -->
+      </section>
+      <!-- /.sidebar -->
+    </aside>
+
+    <div class="content-wrapper">
+      <section class="content-header">
+        <h1>{{ block('title') }}</h1>
+      </section><!-- /.content-header -->
+      <section class="content">
+      {% block content %}{% endblock %}
+      </section><!-- /.content -->
+    </div>
+
+    <footer class="main-footer">
+      An experiment by <a href="http://www.github.com/tsmith512">tsmith</a>.
+    </footer>
+  </div><!-- /.wrapper -->
+  <script src="/vendor/almasaeed2010/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+  <script src="/vendor/almasaeed2010/adminlte/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/vendor/almasaeed2010/adminlte/dist/js/app.min.js"></script>
+  <script src="https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.js"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
