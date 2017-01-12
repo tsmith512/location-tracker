@@ -20,8 +20,8 @@ $api->post('/location', function (Request $request) use ($app){
   // Human readable date, Unix Timestamp, Latitude, Longitude newline
 
   // Break up the request body by newline to get entry rows:
+  preg_replace('/[\r\n]+/', "\n", $entries);
   $entries = explode("\n",  trim($request->getContent()));
-
   // Split up the entry rows by comma to get individual components
   array_walk($entries, function(&$entry) { $entry = explode(',', trim($entry)); });
 
@@ -63,7 +63,9 @@ $api->post('/location', function (Request $request) use ($app){
     } else {
       // $lat and/or $lon either weren't submitted or weren't numeric.
       // @TODO: More detail here wouldn't be a bad thing...
-      return $app->abort(400, "Bad Request: Row contained malformed coordinates: {$entry}");
+      // @TODO: Also, earlier rows would have already been inserted, so this would
+      //        kill a batch in the middle. What should the client do?
+      return $app->abort(400, "Bad Request: Row contained malformed coordinates");
     }
   }
 
