@@ -13,12 +13,16 @@ use Traveler\Location;
 $api = $app['controllers_factory'];
 
 $api->post('/location', function (Request $request) use ($app){
-  // This is the %LOC parameter from Tasker
-  $location = explode(',', $request->get('location'));
-  $lat = is_numeric($location[0]) ? (float) $location[0] : false;
-  $lon = (isset($location[1]) && is_numeric($location[1])) ? (float) $location[1] : false;
 
-  $time = (int) $request->get('time') ?: time();
+  // Tasker records the data in a text file like this:
+  // 1-12-17,1484253026,30.123,-95.123
+  // Human readable date, Unix Timestamp, Latitude, Longitude
+  $entry = explode(',', trim($request->getContent()));
+
+  // $entry[0] is a date for human use; skipped.
+  $time = (isset($entry[1]) && is_numeric($entry[1])) ? (int) $entry[1]   : time();
+  $lat  = (isset($entry[2]) && is_numeric($entry[2])) ? (float) $entry[2] : false;
+  $lon  = (isset($entry[3]) && is_numeric($entry[3])) ? (float) $entry[3] : false;
 
   if ($lat && $lon) {
 
