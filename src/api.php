@@ -15,9 +15,20 @@ $api = $app['controllers_factory'];
 $api->post('/location', function (Request $request) use ($app){
 
   // Tasker records the data in a text file like this:
-  // 1-12-17,1484253026,30.123,-95.123
-  // Human readable date, Unix Timestamp, Latitude, Longitude
-  $entry = explode(',', trim($request->getContent()));
+  //   1-12-17,1484250000,30.123,-95.123
+  //   1-12-18,1484260000,30.456,-95.456
+  // Human readable date, Unix Timestamp, Latitude, Longitude newline
+
+  // Break up the request body by newline to get entry rows:
+  $entry = explode("\n",  trim($request->getContent()));
+
+  // Split up the entry rows by comma to get individual components
+  array_walk($entry, function(&$row) { $row = explode(',', trim($row)); });
+
+  if (count($entry) == 1) {
+    $entry = reset($entry);
+  }
+  //  print_r($entry); die();
 
   // $entry[0] is a date for human use; skipped.
   $time = (isset($entry[1]) && is_numeric($entry[1])) ? (int) $entry[1]   : time();
@@ -25,7 +36,6 @@ $api->post('/location', function (Request $request) use ($app){
   $lon  = (isset($entry[3]) && is_numeric($entry[3])) ? (float) $entry[3] : false;
 
   if ($lat && $lon) {
-
     // Doctrine doesn't have a Replace Into / If Dup Update command, so we prepare our own
     $sql = "REPLACE INTO location_history (`lat`, `lon`, `time`) VALUES (:lat, :lon, :time);";
     $query = $app['db']->prepare($sql);
