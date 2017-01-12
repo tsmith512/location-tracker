@@ -24,7 +24,7 @@
     $('#map').height($('footer').offset().top - $('#map').offset().top - 90);
 
     var tripLine = L.mapbox.featureLayer()
-      .loadURL('/public/api/location/history/line')
+      .loadURL('/api/location/history/line')
       .addTo(map);
 
     tripLine.on('ready', function () {

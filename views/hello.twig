@@ -9,7 +9,7 @@
 {% block scripts %}
   <script>
     var request = new XMLHttpRequest();
-    request.open('GET', '/public/api/location/latest', true);
+    request.open('GET', '/api/location/latest', true);
 
     request.onload = function() {
       var placeholder = document.getElementById('placeholder');

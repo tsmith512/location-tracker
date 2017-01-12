@@ -40,7 +40,7 @@
   <script src="https://momentjs.com/downloads/moment-timezone-with-data-2010-2020.js"></script>
   <script>
     var request = new XMLHttpRequest();
-    request.open('GET', '/public/api/location/latest', true);
+    request.open('GET', '/api/location/latest', true);
 
     request.onload = function() {
       var locationUpdate = document.getElementById('last-location');
