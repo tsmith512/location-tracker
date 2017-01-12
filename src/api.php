@@ -5,19 +5,33 @@
  * Contains the first set of API endpoints
  */
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Geocoder\Provider\GeocoderServiceProvider;
+use Traveler\Location;
+
 $api = $app['controllers_factory'];
 
 $api->post('/location', function (Request $request) use ($app){
   // This is the %LOC parameter from Tasker
-  $location = explode(',', $request->request->get('location'));
+  $location = explode(',', $request->get('location'));
   $lat = is_numeric($location[0]) ? (float) $location[0] : false;
   $lon = (isset($location[1]) && is_numeric($location[1])) ? (float) $location[1] : false;
 
+  $time = (int) $request->get('time') ?: time();
+
   if ($lat && $lon) {
-    $app['db']->insert('location_history', array(
-      'lat' => $lat,
-      'lon' => $lon,
-    ));
+
+    // Doctrine doesn't have a Replace Into / If Dup Update command, so we prepare our own
+    $sql = "REPLACE INTO location_history (`lat`, `lon`, `time`) VALUES (:lat, :lon, :time);";
+    $query = $app['db']->prepare($sql);
+
+    // On a replacement, the `id` key will be auto-updated. I think that's actually useful
+    // while I work this out.
+    $query->bindValue('lat', $lat);
+    $query->bindValue('lon', $lon);
+    $query->bindValue('time', $time);
+    $query->execute();
 
     if ((int) $app['db']->lastInsertId()) {
       // We got back a row ID, so we know the database has this info.
