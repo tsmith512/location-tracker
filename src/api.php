@@ -37,8 +37,10 @@ $api->post('/location', function (Request $request) use ($app){
     $lon  = (isset($entry[3]) && is_numeric($entry[3])) ? (float) $entry[3] : false;
 
     if ($lat && $lon) {
-      // Doctrine doesn't have a Replace Into / If Dup Update command, so we prepare our own
-      $sql = "REPLACE INTO location_history (`lat`, `lon`, `time`) VALUES (:lat, :lon, :time);";
+      // Doctrine doesn't have a Replace Into / If Dup Update command, so we prepare our own.
+      // `time` is a unique int unixtime. @TODO: Still including `timestamp` for now, should
+      // consolidate to one or the other. Unique index on TIMESTAMP field seemed weird.
+      $sql = "REPLACE INTO location_history (`lat`, `lon`, `time`, `timestamp`) VALUES (:lat, :lon, :time, FROM_UNIXTIME(:time));";
       $query = $app['db']->prepare($sql);
 
       // On a replacement, the `id` key will be auto-updated. I think that's actually useful
