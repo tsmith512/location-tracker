@@ -20,53 +20,63 @@ $api->post('/location', function (Request $request) use ($app){
   // Human readable date, Unix Timestamp, Latitude, Longitude newline
 
   // Break up the request body by newline to get entry rows:
-  $entry = explode("\n",  trim($request->getContent()));
+  $entries = explode("\n",  trim($request->getContent()));
 
   // Split up the entry rows by comma to get individual components
-  array_walk($entry, function(&$row) { $row = explode(',', trim($row)); });
+  array_walk($entries, function(&$entry) { $entry = explode(',', trim($entry)); });
 
-  if (count($entry) == 1) {
-    $entry = reset($entry);
-  }
-  //  print_r($entry); die();
+  // Variables
+  $total = count($entries);
+  $created = 0;
 
-  // $entry[0] is a date for human use; skipped.
-  $time = (isset($entry[1]) && is_numeric($entry[1])) ? (int) $entry[1]   : time();
-  $lat  = (isset($entry[2]) && is_numeric($entry[2])) ? (float) $entry[2] : false;
-  $lon  = (isset($entry[3]) && is_numeric($entry[3])) ? (float) $entry[3] : false;
+  foreach ($entries as $entry) {
 
-  if ($lat && $lon) {
-    // Doctrine doesn't have a Replace Into / If Dup Update command, so we prepare our own
-    $sql = "REPLACE INTO location_history (`lat`, `lon`, `time`) VALUES (:lat, :lon, :time);";
-    $query = $app['db']->prepare($sql);
+    // $entry[0] is a date for human use; skipped.
+    $time = (isset($entry[1]) && is_numeric($entry[1])) ? (int) $entry[1]   : time();
+    $lat  = (isset($entry[2]) && is_numeric($entry[2])) ? (float) $entry[2] : false;
+    $lon  = (isset($entry[3]) && is_numeric($entry[3])) ? (float) $entry[3] : false;
 
-    // On a replacement, the `id` key will be auto-updated. I think that's actually useful
-    // while I work this out.
-    $query->bindValue('lat', $lat);
-    $query->bindValue('lon', $lon);
-    $query->bindValue('time', $time);
-    $query->execute();
+    if ($lat && $lon) {
+      // Doctrine doesn't have a Replace Into / If Dup Update command, so we prepare our own
+      $sql = "REPLACE INTO location_history (`lat`, `lon`, `time`) VALUES (:lat, :lon, :time);";
+      $query = $app['db']->prepare($sql);
 
-    if ((int) $app['db']->lastInsertId()) {
-      // We got back a row ID, so we know the database has this info.
+      // On a replacement, the `id` key will be auto-updated. I think that's actually useful
+      // while I work this out.
+      $query->bindValue('lat', $lat);
+      $query->bindValue('lon', $lon);
+      $query->bindValue('time', $time);
+      $query->execute();
 
-      // Geocode:
-      // @TODO this is a shitty way to do this:
-      $location = new Location($app);
-      if ($location->loadId((int) $app['db']->lastInsertId())) { $location->geocode(); }
+      if ((int) $app['db']->lastInsertId()) {
+        // We got back a row ID, so we know the database has this info.
+        $created++;
 
-      return new Response("Location recorded.", 201);
+        // Geocode:
+        // @TODO this is a shitty way to do this:
+        $location = new Location($app);
+        if ($location->loadId((int) $app['db']->lastInsertId())) { $location->geocode(); }
 
+      } else {
+        // We aren't sure the DB recorded the new info, but we have no errors
+      }
     } else {
-      // We aren't sure the DB recorded the new info, but we have no errors
-      return new Response("Location received.", 200);
+      // $lat and/or $lon either weren't submitted or weren't numeric.
+      // @TODO: More detail here wouldn't be a bad thing...
+      return $app->abort(400, "Bad Request: Row contained malformed coordinates: {$entry}");
     }
-  } else {
-    // $lat and/or $lon either weren't submitted or weren't numeric.
-    // @TODO: More detail here wouldn't be a bad thing...
-    return $app->abort(400, "Bad Request");
   }
+
+  if ($created == $total) {
+    return new Response("Location recorded.", 201);
+  } else {
+    // So there were no rows missing coordinates (throws 400), but we didn't
+    // get database confirmation on every row. @TODO: What do do about that?
+    return new Response("Location received.", 200);
+  }
+
 })->before($keyCheck);
+
 
 $api->get('/location/latest', function () use ($app) {
   $sql = 'SELECT full_city, city, timestamp, lat, lon FROM location_history WHERE city IS NOT NULL ORDER BY timestamp DESC LIMIT 1';
