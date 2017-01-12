@@ -55,7 +55,7 @@ $api->post('/location', function (Request $request) use ($app){
         // Geocode:
         // @TODO this is a shitty way to do this:
         $location = new Location($app);
-        if ($location->loadId((int) $app['db']->lastInsertId())) { $location->geocode(); }
+        if ($location->loadId((int) $app['db']->lastInsertId()) && $total < 11) { $location->geocode(); }
 
       } else {
         // We aren't sure the DB recorded the new info, but we have no errors
