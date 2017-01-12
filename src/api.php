@@ -83,13 +83,13 @@ $api->post('/location', function (Request $request) use ($app){
 
 
 $api->get('/location/latest', function () use ($app) {
-  $sql = 'SELECT full_city, city, timestamp, lat, lon FROM location_history WHERE city IS NOT NULL ORDER BY timestamp DESC LIMIT 1';
+  $sql = 'SELECT full_city, city, time, lat, lon FROM location_history WHERE city IS NOT NULL ORDER BY time DESC LIMIT 1';
   $result = $app['db']->fetchAll($sql);
   return $app->json(reset($result));
 });
 
 $api->get('/location/history/line', function () use ($app) {
-  $sql = 'SELECT lon, lat FROM location_history ORDER BY timestamp DESC';
+  $sql = 'SELECT lon, lat FROM location_history ORDER BY time DESC';
   $result = $app['db']->fetchAll($sql);
 
   $history = array(

@@ -49,9 +49,10 @@
       if (this.status >= 200 && this.status < 400) {
         // Success!
         var data = JSON.parse(this.response);
+console.log(data);
         if (data.city.length > 0) {
           locationUpdate.innerHTML = data.city;
-          var lastTime = moment.tz(data.timestamp, "UTC");
+          var lastTime = moment.unix(data.time);
           var lastTimeOutput = lastTime.clone().tz("America/Chicago");
           timeUpdate.innerHTML = lastTimeOutput.format('h:mma z');
           map.setView([data.lat, data.lon], 11);
