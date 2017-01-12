@@ -23,6 +23,46 @@
         </div>
       </form>
     </div>
+    <div class="box box-info">
+      <form id="cities">
+        <div class="box-header with-border">
+          <h3 class="box-title">Cities</h3>
+        </div>
+        <div class="box-body">
+          <div class="form-group">
+            <button class="btn btn-info" id="city-austin">Austin</button>
+            <button class="btn btn-info" id="city-houston">Houston</button>
+            <button class="btn btn-info" id="city-tulsa">Tulsa</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="box box-info">
+      <form id="regions">
+        <div class="box-header with-border">
+          <h3 class="box-title">Regions</h3>
+        </div>
+        <div class="box-body">
+          <div class="form-group">
+            <button class="btn btn-info" id="region-cali">California</button>
+            <button class="btn btn-info" id="region-colorado">Colorado</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="box box-info">
+      <form id="zones">
+        <div class="box-header with-border">
+          <h3 class="box-title">Zones</h3>
+        </div>
+        <div class="box-body">
+          <div class="form-group">
+            <button class="btn btn-info" id="zone-na">North America</button>
+            <button class="btn btn-info" id="zone-eu">Europe</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
   <div class="col-md-8">
     <div class="box">
@@ -66,5 +106,63 @@
       heat.setOptions(options);
     });
 
+    $('#city-austin').on('click', function(e) {
+      e.preventDefault();
+      $('#radius').val(35);
+      $('#blur').val(65);
+      heat.setOptions({radius: 35, blur: 65});
+      map.setView({lat: 30.28842096834342, lng: -97.74845123291017}, 11);
+    });
+
+    $('#city-houston').on('click', function(e) {
+      e.preventDefault();
+      $('#radius').val(25);
+      $('#blur').val(40);
+      heat.setOptions({radius: 25, blur: 40});
+      map.setView({lat: 29.81771047425529, lng: -95.43170928955078}, 11);
+    });
+
+    $('#city-tulsa').on('click', function(e) {
+      e.preventDefault();
+      $('#radius').val(35);
+      $('#blur').val(70);
+      heat.setOptions({radius: 35, blur: 70});
+      map.setView({lat: 36.13718154651142, lng: -95.94068527221681}, 12);
+    });
+
+    $('#region-cali').on('click', function(e) {
+      e.preventDefault();
+      $('#radius').val(30);
+      $('#blur').val(65);
+      heat.setOptions({radius: 30, blur: 65});
+      map.setView({lat: 35.44724605551148, lng: -119.97619628906251}, 7);
+    });
+
+    $('#region-colorado').on('click', function(e) {
+      e.preventDefault();
+      $('#radius').val(40);
+      $('#blur').val(75);
+      heat.setOptions({radius: 40, blur: 75});
+      map.setView({lat: 40.0833252155441, lng: -105.23391723632814}, 9);
+    });
+
+    $('#zone-na').on('click', function(e) {
+      e.preventDefault();
+      $('#radius').val(35);
+      $('#blur').val(50);
+      heat.setOptions({radius: 35, blur: 50});
+      map.setView({lat: 41.21172151054787, lng: -101.55761718750001}, 4);
+    });
+
+    $('#zone-eu').on('click', function(e) {
+      e.preventDefault();
+      $('#radius').val(35);
+      $('#blur').val(50);
+      heat.setOptions({radius: 35, blur: 50});
+      map.setView({lat: 48.96579381461063, lng: -0.5053710937500001}, 5);
+    });
+
+    // Start with North America
+    $(document).ready(function(){ $('#zone-na').click(); });
   </script>
 {% endblock %}
