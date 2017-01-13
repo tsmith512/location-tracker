@@ -1,30 +1,20 @@
 (function($){
   'use strict';
 
-  var request = new XMLHttpRequest();
-  request.open('GET', '/api/location/latest', true);
+  $.getJSON('/api/location/latest', function(data) {
+    var locationUpdate = document.getElementById;
 
-  request.onload = function() {
-    var locationUpdate = document.getElementById('last-location');
-    var timeUpdate = document.getElementById('last-time');
+    if (data.city.length) {
+      // Convert the timestamp to a localized date string; display:
+      var lastTime = moment.unix(data.time);
+      var lastTimeOutput = lastTime.clone().tz("America/Chicago");
+      $('#last-time').text(lastTimeOutput.format('dddd, MMMM Do, h:mma z'));
 
-    if (this.status == 200) {
-      var data = JSON.parse(this.response);
+      // Output the city name
+      $('#last-location').text(data.city);
 
-      if (data.city.length) {
-        // Convert the timestamp to a localized date string; display:
-        var lastTime = moment.unix(data.time);
-        var lastTimeOutput = lastTime.clone().tz("America/Chicago");
-        timeUpdate.innerHTML = lastTimeOutput.format('dddd, MMMM Do, h:mma z');
-
-        // Output the city name
-        locationUpdate.innerHTML = data.city;
-
-        // Set the map center to the latest record
-        map.setView([data.lat, data.lon], 12);
-      }
+      // Set the map center to the latest record
+      map.setView([data.lat, data.lon], 12);
     }
-  };
-
-  request.send();
+  });
 })(jQuery);
