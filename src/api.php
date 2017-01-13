@@ -131,6 +131,49 @@ $api->get('/location/history/points', function() use ($app) {
   return $app->json($history);
 });
 
+$api->get('/trips', function() use ($app) {
+  $sql = 'SELECT * FROM trips ORDER BY starttime ASC';
+  $result = $app['db']->fetchAll($sql);
+  return $app->json($result);
+});
+
+$api->get('/trips/{id}', function($id) use ($app) {
+  // Make sure no one is being sneaky, this should be a number.
+  if (!intval($id)) {
+    return $app->abort(400, "Bad Request: Trip ID should be numeric");
+  }
+
+  $sql = "SELECT * FROM trips WHERE id = ? LIMIT 1";
+  $trip = $app['db']->fetchAssoc($sql, array((int) $id));
+
+  if (!$trip) {
+    return $app->abort(404, "Not Found: Trip ID not found");
+  }
+
+  $sql = "SELECT lon, lat FROM location_history WHERE time > {$trip['starttime']} AND time < {$trip['endtime']} ORDER BY time DESC";
+  $result = $app['db']->fetchAll($sql);
+
+  $line = array(
+    'type' => 'LineString',
+    'properties' => array(
+      'stroke' => '#FF6633',
+      'stroke-width' => 2
+     ),
+  );
+
+  foreach ($result as $point) {
+    $lon = $point['lon'];
+    $lat = $point['lat'];
+
+    $line['coordinates'][] = array($lon, $lat);
+  }
+
+  $trip['line'] = $line;
+
+  return $app->json($trip);
+});
+
+
 $api->get('/class-test', function() use ($app) {
   $result = $app['db']->fetchAll('SELECT id FROM location_history WHERE geocode_attempts < 2 AND geocode_full_response IS NULL ORDER BY id ASC LIMIT 10');
   if (!empty($result)) {
