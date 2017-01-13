@@ -150,7 +150,7 @@ $api->get('/trips/{id}', function($id) use ($app) {
     return $app->abort(404, "Not Found: Trip ID not found");
   }
 
-  $sql = "SELECT lon, lat FROM location_history WHERE time > {$trip['starttime']} AND time < {$trip['endtime']} ORDER BY time DESC";
+  $sql = "SELECT lon, lat FROM location_history WHERE time >= {$trip['starttime']} AND time <= {$trip['endtime']} ORDER BY time DESC";
   $result = $app['db']->fetchAll($sql);
 
   $line = array(
