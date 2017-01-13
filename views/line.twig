@@ -15,21 +15,6 @@
 {% endblock %}
 
 {% block scripts %}
-  <script>
-    // Provide your access token
-    L.mapbox.accessToken = 'pk.eyJ1IjoidHNtaXRoNTEyIiwiYSI6IlBERzc0Mk0ifQ.IBWVp4rs5wKQ_8pkLOBXUw';
-    // Create a map in the div #map
-    var map = L.mapbox.map('map', 'tsmith512.ee6ea9bf');
-
-    $('#map').height($('footer').offset().top - $('#map').offset().top - 90);
-
-    var tripLine = L.mapbox.featureLayer()
-      .loadURL('/api/location/history/line')
-      .addTo(map);
-
-    tripLine.on('ready', function () {
-      map.fitBounds(tripLine.getBounds());
-    });
-
-  </script>
+  <script src="/js/global.js"></script>
+  <script src="/js/line.js"></script>
 {% endblock %}
