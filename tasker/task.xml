@@ -1,0 +1,63 @@
+<TaskerData sr="" dvi="1" tv="4.9u3m">
+<Task sr="task3">
+<cdate>1459899468671</cdate>
+<edate>1484691436082</edate>
+<id>3</id>
+<nme>Send Location v2</nme>
+<pri>100</pri>
+<Action sr="act0" ve="7">
+<code>902</code>
+<Int sr="arg0" val="0"/>
+<Int sr="arg1" val="25"/>
+<Int sr="arg2" val="0"/>
+<Int sr="arg3" val="0"/>
+</Action>
+<Action sr="act1" ve="7">
+<code>410</code>
+<se>false</se>
+<Str sr="arg0" ve="3">Documents/location_history_backup.txt</Str>
+<Str sr="arg1" ve="3">%DATE,%TIMES,%LOC</Str>
+<Int sr="arg2" val="1"/>
+<Int sr="arg3" val="1"/>
+</Action>
+<Action sr="act2" ve="7">
+<code>410</code>
+<se>false</se>
+<Str sr="arg0" ve="3">Documents/location_history_queue.txt</Str>
+<Str sr="arg1" ve="3">%DATE,%TIMES,%LOC</Str>
+<Int sr="arg2" val="1"/>
+<Int sr="arg3" val="1"/>
+</Action>
+<Action sr="act3" ve="7">
+<code>417</code>
+<Str sr="arg0" ve="3">Documents/location_history_queue.txt</Str>
+<Str sr="arg1" ve="3">%LHQUEUE</Str>
+</Action>
+<Action sr="act4" ve="7">
+<code>116</code>
+<se>false</se>
+<Str sr="arg0" ve="3">YOUR-DOMAIN</Str>
+<Str sr="arg1" ve="3">/api/location?key=77QedyTiktSP1egjhGVit7vm</Str>
+<Str sr="arg2" ve="3">%LHQUEUE</Str>
+<Str sr="arg3" ve="3"/>
+<Str sr="arg4" ve="3"/>
+<Int sr="arg5" val="15"/>
+<Str sr="arg6" ve="3">text/plain</Str>
+<Str sr="arg7" ve="3">Documents/output</Str>
+<Int sr="arg8" val="0"/>
+</Action>
+<Action sr="act5" ve="7">
+<code>406</code>
+<Str sr="arg0" ve="3">Documents/location_history_queue.txt</Str>
+<Int sr="arg1" val="0"/>
+<Int sr="arg2" val="0"/>
+<ConditionList sr="if">
+<Condition sr="c0" ve="3">
+<lhs>%HTTPR</lhs>
+<op>0</op>
+<rhs>201</rhs>
+</Condition>
+</ConditionList>
+</Action>
+</Task>
+</TaskerData>

@@ -1,0 +1,43 @@
+{% extends "base.twig" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-6 col-sm-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-aqua"><i class="fa fa-map-marker"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Last Location</span>
+        <span class="info-box-number" id="last-location"></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-sm-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-red"><i class="fa fa-clock-o"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Last Reported</span>
+        <span class="info-box-number" id="last-time"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="box">
+      <div id="map" style="height:200px;width:100%"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://momentjs.com/downloads/moment.js"></script>
+  <script src="https://momentjs.com/downloads/moment-timezone-with-data-2010-2020.js"></script>
+  <script src="/js/global.js"></script>
+  <script src="/js/home.js"></script>
+{% endblock %}
