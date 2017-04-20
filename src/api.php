@@ -131,6 +131,33 @@ $api->get('/location/history/points', function() use ($app) {
   return $app->json($history);
 });
 
+$api->get('/location/history/timestamp/{time}', function($time) use ($app) {
+  // Make sure no one is being sneaky, this should be a number.
+  if (!intval($time)) {
+    return $app->abort(400, "Bad Request: Timestamp should be numeric (unix formatted timestamp of seconds)");
+  }
+
+  $sql = 'SELECT lon, lat, city, full_city, `time`, ABS(`time` - :time) AS `difference` FROM location_history ORDER BY `difference` ASC LIMIT 1;';
+  $result = $app['db']->executeQuery($sql, array('time' => (int) $time));
+  $point = $result->fetch();
+
+  // I mean, it's just math, if there's any history, there's a nearest point,
+  // but let's cover our bases.
+  if (empty($point)) {
+    return $app->abort(404, "No Result");
+  }
+
+  $history = array(
+    'full_city' => $point['full_city'],
+    'city' => $point['city'],
+    'time' => $point['time'],
+    'lat' => $point['lat'],
+    'lon' => $point['lon'],
+  );
+
+  return $app->json($history);
+});
+
 $api->get('/trips', function() use ($app) {
   $sql = 'SELECT * FROM trips ORDER BY starttime ASC';
   $result = $app['db']->fetchAll($sql);
