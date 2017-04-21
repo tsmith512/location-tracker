@@ -204,7 +204,7 @@ Trips are manually created time-bound pieces of the location history.
 
 + Response 200 (application/json)
 
-    Returns an array of trip objects.
+    Returns an array of all trips as trip metadata objects _without_ the GeoJSON `line` property.
     
     + Body
     
@@ -244,7 +244,7 @@ Get details about a particular trip.
 
 + Response 200 (application/json)
 
-    A GeoJSON `LineString` with additional trip metadata. Only rows within the trip's bounding timestamps will be returned.
+    A trip metadata object, containing the trip route as a GeoJSON `LineString` as the `line` property of the object. Only rows within the trip's bounding timestamps will be returned.
 
     + Body
 
