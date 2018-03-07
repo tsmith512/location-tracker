@@ -84,8 +84,25 @@ $api->post('/location', function (Request $request) use ($app){
 
 $api->get('/location/latest', function () use ($app) {
   $sql = 'SELECT full_city, city, time, lat, lon FROM location_history WHERE city IS NOT NULL ORDER BY time DESC LIMIT 1';
-  $result = $app['db']->fetchAll($sql);
-  return $app->json(reset($result));
+  $result = $app['db']->executeQuery($sql);
+  $point = $result->fetch();
+
+  // Check to see if this location stamp is during any trips and include
+  // them in the result. (This is a safety feature for the blog abstraction)
+  $sql = "SELECT * FROM trips WHERE starttime <= {$point['time']} AND endtime >= {$point['time']}";
+  $trips = $app['db']->fetchAll($sql);
+
+
+  $history = array(
+    'full_city' => $point['full_city'],
+    'city' => $point['city'],
+    'time' => $point['time'],
+    'lat' => $point['lat'],
+    'lon' => $point['lon'],
+    'trips' => $trips,
+  );
+
+  return $app->json($history);
 });
 
 $api->get('/location/history/line', function () use ($app) {
@@ -147,12 +164,19 @@ $api->get('/location/history/timestamp/{time}', function($time) use ($app) {
     return $app->abort(404, "No Result");
   }
 
+  // Look up relevant trips from the _location's_ time, not the request
+  // time, just to be on the safe side.
+  $sql = "SELECT * FROM trips WHERE starttime <= {$point['time']} AND endtime >= {$point['time']}";
+  $trips = $app['db']->fetchAll($sql);
+
+
   $history = array(
     'full_city' => $point['full_city'],
     'city' => $point['city'],
     'time' => $point['time'],
     'lat' => $point['lat'],
     'lon' => $point['lon'],
+    'trips' => $trips,
   );
 
   return $app->json($history);
