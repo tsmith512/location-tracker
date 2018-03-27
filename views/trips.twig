@@ -43,11 +43,11 @@
           </div>
           <div class="form-group">
             <label for="trip_id" class="control-label">Label</label>
-            <input type="text" class="form-control" id="trip_label" required>
+            <input type="text" class="form-control" id="trip_label" required maxlength="255">
           </div>
           <div class="form-group">
             <label for="trip_id" class="control-label">Machine</label>
-            <input type="text" class="form-control" id="trip_machine_name" required pattern="^[a-z_]+$">
+            <input type="text" class="form-control" id="trip_machine_name" required pattern="^[a-z_]+$" maxlength="50">
             <p class="help-block">Lowercase letters and underscores only.</p>
           </div>
           <div class="form-group">

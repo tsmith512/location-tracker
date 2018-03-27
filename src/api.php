@@ -188,6 +188,39 @@ $api->get('/trips', function() use ($app) {
   return $app->json($result);
 });
 
+$api->post('/trips/create', function(Request $request) use ($app) {
+  $submitted = json_decode($request->getContent());
+
+  $trip = array(
+    'id' => null,
+    // @TODO: Sanitize the machine name
+    'machine_name' => substr($submitted->machine_name, 0, 50),
+    'starttime' => (int) $submitted->starttime,
+    'endtime' => (int) $submitted->endtime,
+    'label' => substr($submitted->label, 0, 255)
+  );
+
+  if (!$trip['starttime'] || !$trip['endtime']) {
+    return new Response("Please provide valid start and end timestamps", 400);
+  }
+
+  if (!$trip['machine_name'] || !$trip['label']) {
+    return new Response("Please provide a valid machine name and label", 400);
+  }
+
+  $app['db']->insert('trips', $trip);
+
+  if ($app['db']->lastInsertId()) {
+    $trip['id'] = $app['db']->lastInsertId();
+    return new Response(json_encode($trip), 201);
+  } else {
+    // @TODO: It'd be great to wrap this and catch the error
+    return new Response("Unknown error inserting new trip", 500);
+  }
+
+  // return new Response("Location recorded.", 201);
+});
+
 $api->get('/trips/{id}', function($id) use ($app) {
   // Make sure no one is being sneaky, this should be a number.
   if (!intval($id)) {
