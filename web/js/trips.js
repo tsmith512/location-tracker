@@ -31,5 +31,17 @@
         });
       }
     });
+
+    $('#trip-form').on("submit", function(){
+      var newTrip = {
+        id: null,
+        machine_name: document.getElementById("trip_machine_name").value,
+        starttime: document.getElementById("trip_start").value,
+        endtime: document.getElementById("trip_end").value,
+        label: document.getElementById("trip_label").value
+      }
+
+      console.log(newTrip);
+    });
   });
 })(jQuery);
