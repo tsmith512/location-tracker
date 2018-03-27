@@ -11,10 +11,21 @@
           // To ensure the right order, select props each instead of iterating
           ['id', 'label', 'machine_name', 'starttime', 'endtime'].forEach(function(prop, index) {
 
+            // Create the cell
             var cell = row.insertCell(index);
 
-            // Append a text node to the cell
-            var value = document.createTextNode(trip[prop]);
+            // If we're dealing with a time, let's make it easy to read
+            if (prop.indexOf('time') > -1) {
+              var date = new Date(trip[prop] * 1000);
+              var value = document.createTextNode(
+                date.toLocaleDateString() + " " + date.toLocaleTimeString()
+              );
+            }
+            else {
+              // Append a text node to the cell
+              var value = document.createTextNode(trip[prop]);
+            }
+
             cell.appendChild(value);
           });
         });
