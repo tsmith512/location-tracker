@@ -18,7 +18,7 @@
             if (prop.indexOf('time') > -1) {
               var date = new Date(trip[prop] * 1000);
               var value = document.createTextNode(
-                date.toLocaleDateString() + " " + date.toLocaleTimeString()
+                date.toLocaleString()
               );
             }
             else {
