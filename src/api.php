@@ -96,9 +96,9 @@ $api->get('/location/latest', function () use ($app) {
   $history = array(
     'full_city' => $point['full_city'],
     'city' => $point['city'],
-    'time' => $point['time'],
-    'lat' => $point['lat'],
-    'lon' => $point['lon'],
+    'time' => (int) $point['time'],
+    'lat' => (float) $point['lat'],
+    'lon' => (float) $point['lon'],
     'trips' => $trips,
   );
 
@@ -118,8 +118,8 @@ $api->get('/location/history/line', function () use ($app) {
   );
 
   foreach ($result as $point) {
-    $lon = $point['lon'];
-    $lat = $point['lat'];
+    $lon = (float) $point['lon'];
+    $lat = (float) $point['lat'];
 
     $history['coordinates'][] = array($lon, $lat);
   }
@@ -133,8 +133,8 @@ $api->get('/location/history/points', function() use ($app) {
   $history = array();
 
   foreach ($result as $point) {
-    $lon = $point['lon'];
-    $lat = $point['lat'];
+    $lon = (float) $point['lon'];
+    $lat = (float) $point['lat'];
 
     $history[] = array(
       'type' => 'Feature',
@@ -145,7 +145,11 @@ $api->get('/location/history/points', function() use ($app) {
     );
   }
 
-  return $app->json($history);
+  $object = new stdClass;
+  $object->type = "FeatureCollection";
+  $object->features = $history;
+
+  return $app->json($object);
 });
 
 $api->get('/location/history/timestamp/{time}', function($time) use ($app) {
@@ -185,7 +189,45 @@ $api->get('/location/history/timestamp/{time}', function($time) use ($app) {
 $api->get('/trips', function() use ($app) {
   $sql = 'SELECT * FROM trips ORDER BY starttime ASC';
   $result = $app['db']->fetchAll($sql);
+  foreach ($result as &$row) {
+    $row['id'] = (int) $row['id'];
+    $row['starttime'] = (int) $row['starttime'];
+    $row['endtime'] = (int) $row['endtime'];
+  }
   return $app->json($result);
+});
+
+$api->post('/trips/create', function(Request $request) use ($app) {
+  $submitted = json_decode($request->getContent());
+
+  $trip = array(
+    'id' => null,
+    // @TODO: Sanitize the machine name
+    'machine_name' => substr($submitted->machine_name, 0, 50),
+    'starttime' => (int) $submitted->starttime,
+    'endtime' => (int) $submitted->endtime,
+    'label' => substr($submitted->label, 0, 255)
+  );
+
+  if (!$trip['starttime'] || !$trip['endtime']) {
+    return new Response("Please provide valid start and end timestamps", 400);
+  }
+
+  if (!$trip['machine_name'] || !$trip['label']) {
+    return new Response("Please provide a valid machine name and label", 400);
+  }
+
+  $app['db']->insert('trips', $trip);
+
+  if ($app['db']->lastInsertId()) {
+    $trip['id'] = $app['db']->lastInsertId();
+    return new Response(json_encode($trip), 201);
+  } else {
+    // @TODO: It'd be great to wrap this and catch the error
+    return new Response("Unknown error inserting new trip", 500);
+  }
+
+  // return new Response("Location recorded.", 201);
 });
 
 $api->get('/trips/{id}', function($id) use ($app) {
@@ -196,6 +238,10 @@ $api->get('/trips/{id}', function($id) use ($app) {
 
   $sql = "SELECT * FROM trips WHERE id = ? LIMIT 1";
   $trip = $app['db']->fetchAssoc($sql, array((int) $id));
+
+  $trip['id'] = (int) $trip['id'];
+  $trip['starttime'] = (int) $trip['starttime'];
+  $trip['endtime'] = (int) $trip['endtime'];
 
   if (!$trip) {
     return $app->abort(404, "Not Found: Trip ID not found");
@@ -213,8 +259,8 @@ $api->get('/trips/{id}', function($id) use ($app) {
   );
 
   foreach ($result as $point) {
-    $lon = $point['lon'];
-    $lat = $point['lat'];
+    $lon = (float) $point['lon'];
+    $lat = (float) $point['lat'];
 
     $line['coordinates'][] = array($lon, $lat);
   }

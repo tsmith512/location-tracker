@@ -54,5 +54,9 @@ $app->get('/heat', function () use ($app) {
   return $app['twig']->render('heat.twig', array('option' => 'heat'));
 });
 
+$app->get('/trips', function () use ($app) {
+  return $app['twig']->render('trips.twig', array('option' => 'trips'));
+});
+
 // api.php contains all api endpoints for now to clean up this file
 $app->mount('/api', include 'api.php');
