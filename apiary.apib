@@ -29,7 +29,7 @@ There is a Tasker task template in the repository in the `/tasker` directory to 
         + lon: `-95.123` (number) - Longitude
 
     + Body
-    
+
             1-12-17,1484250000,30.123,-95.123
             1-12-18,1484260000,30.456,-95.456
 
@@ -44,25 +44,25 @@ There is a Tasker task template in the repository in the `/tasker` directory to 
 + Response 200 (text/plain)
 
     The data were correctly formatted and parsed, but was not correctly recorded in the database. Client should retain the payload and include it in the next update submission.
-    
+
     + Body
-    
+
             Location received.
 
 + Response 400 (text/plain)
 
     A row in the data wasn't properly formatted and couldn't be parsed. Client should correct the payload and resubmit.
-    
+
     **@TODO:** Previous rows may have been processed properly, ideally client should drop _those_ from the queue and not resubmit. But there isn't a way to compare yet. Workaround: timestamps are unique in the database at this point, so a resubmission of an identical row would just replace it.
-    
+
     + Body
-    
+
             Bad Request: Row contained malformed coordinates
 
 + Response 403 (text/plain)
 
     The API key must be provided as a query argument.
-    
+
     + Body
 
             Unauthorized
@@ -83,15 +83,17 @@ There is a Tasker task template in the repository in the `/tasker` directory to 
         + time: `1484697627` (number) - Unix timestamp
         + lat: `30.275` (number) - Latitude
         + lon: `-97.740` (number) - Longitude
+        + trips: `Array` (array) - Array of any trips for this timestamp
 
     + Body
-    
+
             {
                 "full_city": "Austin, TX, US",
                 "city": "Austin",
-                "time": "1484697627",
-                "lat": "30.275",
-                "lon": "-97.740"
+                "time": 1484697627,
+                "lat": 30.275,
+                "lon": -97.740,
+                "trips": [...]
             }
 
 ## Location History as GeoJSON [/api/location/history/{type}]
@@ -109,9 +111,9 @@ There is a Tasker task template in the repository in the `/tasker` directory to 
 + Response 200 (application/json)
 
     **For a `line` request:** A GeoJSON `LineString`. The coordinates array may be very long. All rows will be returned.
-    
+
     + Body
-    
+
             {
                 "type": "LineString",
                 "properties": {
@@ -120,12 +122,12 @@ There is a Tasker task template in the repository in the `/tasker` directory to 
                 },
                 "coordinates": [
                     [
-                        "-97.740",
-                        "30.275"
+                        -97.740,
+                        30.275
                     ],
                     [
-                        "-97.740",
-                        "30.275"
+                        -97.740,
+                        30.275
                     ]
                 ]
             }
@@ -137,44 +139,47 @@ There is a Tasker task template in the repository in the `/tasker` directory to 
 + Response 200 (application/json)
 
     **For a `points` request:** A GeoJSON collection of `Features`, each of which is a `Point`. All rows will be returned.
-    
+
     + Body
-    
-            [
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            "-97.740",
-                            "30.275"
-                        ]
+
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -97.740,
+                                30.275
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                -97.740,
+                                30.275
+                            ]
+                        }
                     }
-                },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            "-97.740",
-                            "30.275"
-                        ]
-                    }
-                }
-            ]
+                ]
+            }
 
 ## Location by Time [/api/location/timestamp/{time}]
 
 + Parameters
 
     + time (required, intiger, `1492536130`) ... A unix timestamp
-    
+
 ### Get check-in by time [GET]
 
 + Response 200 (application/json)
 
     Returns a standard single location object that is the closest to the requested time.
-    
+
     Response may be before or after the requested time, deterined by lowest absolute value of the difference between the `time` parameter and the rows of recorded history.
 
     + Attributes (object)
@@ -183,15 +188,17 @@ There is a Tasker task template in the repository in the `/tasker` directory to 
         + time: `1484697627` (number) - Unix timestamp
         + lat: `30.275` (number) - Latitude
         + lon: `-97.740` (number) - Longitude
+        + trips: `Array` (array) - Array of any trips for this timestamp
 
     + Body
-    
+
             {
                 "full_city": "Austin, TX, US",
                 "city": "Austin",
-                "time": "1484697627",
-                "lat": "30.275",
-                "lon": "-97.740"
+                "time": 1484697627,
+                "lat": 30.275,
+                "lon": -97.740,
+                "trips": [...]
             }
 
 # Group Retrieving Trips
@@ -205,29 +212,29 @@ Trips are manually created time-bound pieces of the location history.
 + Response 200 (application/json)
 
     Returns an array of all trips as trip metadata objects _without_ the GeoJSON `line` property.
-    
+
     + Body
-    
+
             [
                 {
-                    "id": "1",
+                    "id": 1,
                     "machine_name": "pacific_coast_roadtrip",
-                    "starttime": "1440783004",
-                    "endtime": "1442329222",
+                    "starttime": 1440783004,
+                    "endtime": 1442329222,
                     "label": "Pacific Coast Roadtrip"
                 },
                 {
-                    "id": "2",
+                    "id": 2,
                     "machine_name": "scottish_roadtrip",
-                    "starttime": "1460910603",
-                    "endtime": "1461357013",
+                    "starttime": 1460910603,
+                    "endtime": 1461357013,
                     "label": "Scottish Roadtrip"
                 },
                 {
-                    "id": "3",
+                    "id": 3,
                     "machine_name": "west_texas_adventure",
-                    "starttime": "1484346602",
-                    "endtime": "1484605808",
+                    "starttime": 1484346602,
+                    "endtime": 1484605808,
                     "label": "Big Bend / West Texas Adventure"
                 }
             ]
@@ -249,10 +256,10 @@ Get details about a particular trip.
     + Body
 
             {
-                "id": "2",
+                "id": 2,
                 "machine_name": "scottish_roadtrip",
-                "starttime": "1460910603",
-                "endtime": "1461357013",
+                "starttime": 1460910603,
+                "endtime": 1461357013,
                 "label": "Scottish Roadtrip",
                 "line": {
                     "type": "LineString",
@@ -276,7 +283,7 @@ Get details about a particular trip.
 + Response 404 (text/plain)
 
     The requested trip `id` was not found.
-    
+
     + Body
-    
+
             Not Found: Trip ID not found

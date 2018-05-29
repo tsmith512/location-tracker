@@ -1,0 +1,76 @@
+{% extends "base.twig" %}
+
+{% block title %}Trips{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Trips</h3>
+      </div>
+      <div class="box-body no-padding">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Label</th>
+              <th>Machine Name</th>
+              <th>Start*</th>
+              <th>End*</th>
+            </tr>
+          </thead>
+          <tbody id="triplist"></tbody>
+          <tfoot>
+            <th colspan="3"></th>
+            <th colspan="2"><em>* Times are rendered in your system's current timezone.</em></th>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="box box-success">
+      <div class="box-header with-border">
+        <h3 class="box-title">Add Trip</h3>
+      </div>
+      <form action="#" id="trip-form">
+        <div class="box-body">
+          <div class="form-group">
+            <label for="trip_id" class="control-label">ID</label>
+            <input type="text" class="form-control" id="trip_id" disabled="disabled" placeholder="Will be automatically assigned">
+          </div>
+          <div class="form-group">
+            <label for="trip_id" class="control-label">Label</label>
+            <input type="text" class="form-control" id="trip_label" required maxlength="255">
+          </div>
+          <div class="form-group">
+            <label for="trip_id" class="control-label">Machine</label>
+            <input type="text" class="form-control" id="trip_machine_name" required pattern="^[a-z_]+$" maxlength="50">
+            <p class="help-block">Lowercase letters and underscores only.</p>
+          </div>
+          <div class="form-group">
+            <label for="trip_id" class="control-label">Start</label>
+            <input type="text" class="form-control" id="trip_start" required pattern="^[0-9]+$">
+            <p class="help-block">Provide a Unix timestamp for this value.</p>
+          </div>
+          <div class="form-group">
+            <label for="trip_id" class="control-label">End</label>
+            <input type="text" class="form-control" id="trip_end" pattern="^[0-9]+$">
+            <p class="help-block">Provide a Unix timestamp for this value.</p>
+          </div>
+        </div>
+        <div class="box-footer">
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  <script src="/js/trips.js"></script>
+{% endblock %}
