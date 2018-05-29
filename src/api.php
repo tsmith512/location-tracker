@@ -118,8 +118,8 @@ $api->get('/location/history/line', function () use ($app) {
   );
 
   foreach ($result as $point) {
-    $lon = $point['lon'];
-    $lat = $point['lat'];
+    $lon = (float) $point['lon'];
+    $lat = (float) $point['lat'];
 
     $history['coordinates'][] = array($lon, $lat);
   }
@@ -133,8 +133,8 @@ $api->get('/location/history/points', function() use ($app) {
   $history = array();
 
   foreach ($result as $point) {
-    $lon = $point['lon'];
-    $lat = $point['lat'];
+    $lon = (float) $point['lon'];
+    $lat = (float) $point['lat'];
 
     $history[] = array(
       'type' => 'Feature',
@@ -145,7 +145,11 @@ $api->get('/location/history/points', function() use ($app) {
     );
   }
 
-  return $app->json($history);
+  $object = new stdClass;
+  $object->type = "FeatureCollection";
+  $object->features = $history;
+
+  return $app->json($object);
 });
 
 $api->get('/location/history/timestamp/{time}', function($time) use ($app) {
