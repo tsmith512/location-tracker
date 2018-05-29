@@ -96,9 +96,9 @@ $api->get('/location/latest', function () use ($app) {
   $history = array(
     'full_city' => $point['full_city'],
     'city' => $point['city'],
-    'time' => $point['time'],
-    'lat' => $point['lat'],
-    'lon' => $point['lon'],
+    'time' => (int) $point['time'],
+    'lat' => (float) $point['lat'],
+    'lon' => (float) $point['lon'],
     'trips' => $trips,
   );
 
@@ -189,6 +189,11 @@ $api->get('/location/history/timestamp/{time}', function($time) use ($app) {
 $api->get('/trips', function() use ($app) {
   $sql = 'SELECT * FROM trips ORDER BY starttime ASC';
   $result = $app['db']->fetchAll($sql);
+  foreach ($result as &$row) {
+    $row['id'] = (int) $row['id'];
+    $row['starttime'] = (int) $row['starttime'];
+    $row['endtime'] = (int) $row['endtime'];
+  }
   return $app->json($result);
 });
 
@@ -234,6 +239,10 @@ $api->get('/trips/{id}', function($id) use ($app) {
   $sql = "SELECT * FROM trips WHERE id = ? LIMIT 1";
   $trip = $app['db']->fetchAssoc($sql, array((int) $id));
 
+  $trip['id'] = (int) $trip['id'];
+  $trip['starttime'] = (int) $trip['starttime'];
+  $trip['endtime'] = (int) $trip['endtime'];
+
   if (!$trip) {
     return $app->abort(404, "Not Found: Trip ID not found");
   }
@@ -250,8 +259,8 @@ $api->get('/trips/{id}', function($id) use ($app) {
   );
 
   foreach ($result as $point) {
-    $lon = $point['lon'];
-    $lat = $point['lat'];
+    $lon = (float) $point['lon'];
+    $lat = (float) $point['lat'];
 
     $line['coordinates'][] = array($lon, $lat);
   }
