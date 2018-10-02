@@ -92,7 +92,6 @@ $api->get('/location/latest', function () use ($app) {
   $sql = "SELECT * FROM trips WHERE starttime <= {$point['time']} AND endtime >= {$point['time']}";
   $trips = $app['db']->fetchAll($sql);
 
-
   $history = array(
     'full_city' => $point['full_city'],
     'city' => $point['city'],
