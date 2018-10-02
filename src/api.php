@@ -92,7 +92,6 @@ $api->get('/location/latest', function () use ($app) {
   $sql = "SELECT * FROM trips WHERE starttime <= {$point['time']} AND endtime >= {$point['time']}";
   $trips = $app['db']->fetchAll($sql);
 
-
   $history = array(
     'full_city' => $point['full_city'],
     'city' => $point['city'],
@@ -247,6 +246,15 @@ $api->get('/trips/{id}', function($id) use ($app) {
     return $app->abort(404, "Not Found: Trip ID not found");
   }
 
+  // Get the boundaries of the trip.
+  $sql = "SELECT min(lat) as 'lat_min', min(lon) as 'lon_min', max(lat) as 'lat_max', max(lon) as 'lon_max' FROM location_history WHERE time >= {$trip['starttime']} AND time <= {$trip['endtime']}";
+  $result = $app['db']->fetchAssoc($sql);
+  $boundaries = array(
+    array((float) $result["lat_min"], (float) $result["lon_min"]),
+    array((float) $result["lat_max"], (float) $result["lon_max"])
+  );
+
+  // Get the location stamps of the trip
   $sql = "SELECT lon, lat FROM location_history WHERE time >= {$trip['starttime']} AND time <= {$trip['endtime']} ORDER BY time DESC";
   $result = $app['db']->fetchAll($sql);
 
@@ -265,6 +273,7 @@ $api->get('/trips/{id}', function($id) use ($app) {
     $line['coordinates'][] = array($lon, $lat);
   }
 
+  $trip['boundaries'] = $boundaries;
   $trip['line'] = $line;
 
   return $app->json($trip);
