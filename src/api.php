@@ -259,15 +259,15 @@ $api->get('/trips/{id}', function($id) use ($app) {
 
 
 $api->get('/class-test', function() use ($app) {
-  $result = $app['db']->fetchAll('SELECT id FROM location_history WHERE geocode_attempts < 2 AND geocode_full_response IS NULL ORDER BY id ASC LIMIT 10');
+  $result = $app['db']->fetchAll('SELECT id FROM location_history WHERE geocode_attempts < 2 AND geocode_full_response IS NULL ORDER BY id DESC LIMIT 10');
   if (!empty($result)) {
     foreach ($result as $k => $v) {
       $location = new Location($app);
       if ($location->loadId((int) $result[$k]['id'])) { $location->geocode(); }
     }
-    return true;
+    return $app->json($result);
   } else {
-    return false;
+    return $app->json(array());
   }
 });
 
