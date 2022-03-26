@@ -3,7 +3,7 @@
         "silex/silex": "~1.3",
         "doctrine/dbal": "~2.2",
         "ronanchilvers/silex-yaml-config-provider": "0.1.*",
-        "twig/twig": "~1.24",
+        "twig/twig": "~2.14",
         "symfony/twig-bridge": "~3.0",
         "geocoder-php/geocoder-service-provider": "0.1.*",
         "almasaeed2010/adminlte": "~2.0",
